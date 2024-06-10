@@ -1,0 +1,71 @@
+/* General container styling */
+.congratulations-container {
+    height: 80vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: gray;
+    overflow: hidden; /* Prevent overflow from animations */
+  }
+  
+  /* Content styling */
+  .congratulations-content {
+    text-align: center;
+    color: white;
+    font-family: 'Arial, sans-serif';
+  }
+  
+  /* Title animation */
+  .congratulations-title {
+    font-size: 4em;
+    animation: bounce 2s infinite;
+    margin-bottom: 20px;
+  }
+  
+  /* Message animation */
+  .congratulations-message {
+    font-size: 2em;
+    animation: fadeIn 3s ease-in-out;
+  }
+  
+  /* Button styling and animation */
+  .play-again-button {
+    font-size: 1.5em;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s, background-color 0.3s;
+  }
+  
+  .play-again-button:hover {
+    transform: scale(1.1);
+    background-color: #45a049;
+  }
+  
+  /* Bounce animation */
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-30px);
+    }
+    60% {
+      transform: translateY(-15px);
+    }
+  }
+  
+  /* Fade-in animation */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
