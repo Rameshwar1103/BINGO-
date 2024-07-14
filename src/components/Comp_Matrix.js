@@ -20,6 +20,92 @@ const ComputerControlledMatrix = (props) => {
     const newMatrix = swapRandomly(props.matrix2, 20 + Math.floor(Math.random() * 10));
     props.setMatrix2(newMatrix);
   }, []);
+  
+  const chooseStrategicButton = () => {
+    if (props.turn === "comp") {
+      const nonPinkIndices = buttonColors
+        .map((color, index) => color !== 'pink' ? index : null)
+        .filter(index => index !== null);
+
+      if (nonPinkIndices.length > 0) {
+        const matrixSize = 5;
+        const priorityArray = new Array(25).fill(0);
+
+        // Calculate pink buttons in rows, columns, and diagonals
+        const rowCount = new Array(matrixSize).fill(0);
+        const colCount = new Array(matrixSize).fill(0);
+        let diag1Count = 0;
+        let diag2Count = 0;
+
+        buttonColors.forEach((color, index) => {
+          const row = Math.floor(index / matrixSize);
+          const col = index % matrixSize;
+          if (color === 'pink') {
+            rowCount[row]++;
+            colCount[col]++;
+            if (row === col) diag1Count++;
+            if (row + col === matrixSize - 1) diag2Count++;
+          }
+        });
+
+        // Assign priority to each non-pink button based on the value in props.matrix2
+        nonPinkIndices.forEach(index => {
+          const value = props.matrix2[index];
+          const row = Math.floor(index / matrixSize);
+          const col = index % matrixSize;
+          priorityArray[index] += rowCount[row] + colCount[col];
+          if (row === col) priorityArray[index] += diag1Count;
+          if (row + col === matrixSize - 1) priorityArray[index] += diag2Count;
+        });
+
+        // Find the index with the highest priority value
+        let maxPriorityIndex = nonPinkIndices.reduce((maxIndex, currentIndex) =>
+          priorityArray[currentIndex] > priorityArray[maxIndex] ? currentIndex : maxIndex,
+          nonPinkIndices[0]
+        );
+
+        // Ensure to complete a line if almost completed
+        const checkAlmostComplete = (indices) => {
+          return indices.filter(index => buttonColors[index] === 'pink').length === 4;
+        };
+
+        // Rows
+        for (let i = 0; i < matrixSize; i++) {
+          const rowIndices = [...Array(matrixSize)].map((_, j) => i * matrixSize + j);
+          if (checkAlmostComplete(rowIndices)) {
+            maxPriorityIndex = rowIndices.find(index => buttonColors[index] !== 'pink');
+            break;
+          }
+        }
+        // Columns
+        for (let i = 0; i < matrixSize; i++) {
+          const colIndices = [...Array(matrixSize)].map((_, j) => j * matrixSize + i);
+          if (checkAlmostComplete(colIndices)) {
+            maxPriorityIndex = colIndices.find(index => buttonColors[index] !== 'pink');
+            break;
+          }
+        }
+        // Diagonals
+        const diag1Indices = [...Array(matrixSize)].map((_, i) => i * (matrixSize + 1));
+        const diag2Indices = [...Array(matrixSize)].map((_, i) => (i + 1) * (matrixSize - 1));
+        if (checkAlmostComplete(diag1Indices)) {
+          maxPriorityIndex = diag1Indices.find(index => buttonColors[index] !== 'pink');
+        } else if (checkAlmostComplete(diag2Indices)) {
+          maxPriorityIndex = diag2Indices.find(index => buttonColors[index] !== 'pink');
+        }
+
+        // Update button color and switch turn
+        setButtonColors(currentColors => {
+          const newColors = [...currentColors];
+          newColors[maxPriorityIndex] = 'pink';
+          return newColors;
+        });
+
+        props.handleIndexClick2(maxPriorityIndex);
+        props.setturn("uuuu");
+      }
+    }
+  };
 
   useEffect(() => {
     if (props.clickedIndex != null) {
@@ -32,8 +118,30 @@ const ComputerControlledMatrix = (props) => {
           return newColors;
         });
       }
+      chooseStrategicButton();
     }
   }, [props.clickedIndex, props.matrix2, props.matrix]);
+
+  // useEffect(() => {
+  //   if (props.turn === "comp") {
+  //     const nonPinkIndices = buttonColors
+  //       .map((color, index) => color !== 'pink' ? index : null)
+  //       .filter(index => index !== null);
+
+  //     if (nonPinkIndices.length > 0) {
+  //       const randomIndex = nonPinkIndices[Math.floor(Math.random() * nonPinkIndices.length)];
+  //       setButtonColors(currentColors => {
+  //         const newColors = [...currentColors];
+  //         newColors[randomIndex] = 'pink';
+  //         return newColors;
+  //       });
+  //       props.handleIndexClick2(randomIndex);
+  //       props.setturn("uuuu");
+  //       console.log(props.turn,props.clickedIndex2);
+  //     }
+  //   }
+  // }, [props.turn, buttonColors]);
+ 
 
   const checkCompletedLines = () => {
     const matrixSize = 5; // Assuming a 5x5 matrix
@@ -74,10 +182,10 @@ const ComputerControlledMatrix = (props) => {
     }
 
     setCount(completeRows + completeColumns + completeDiagonals);
-    if(completeRows + completeColumns + completeDiagonals=== 5)
+    if(completeRows + completeColumns + completeDiagonals >= 5)
       {
         props.anounceWinner("Yes");
-        props.setwinner("User");
+        props.setwinner("Comp");
       }
   };
 
@@ -101,7 +209,7 @@ const ComputerControlledMatrix = (props) => {
               backgroundColor: buttonColors[index],
             }}
           >
-            {props.matrix2[index]}
+          
           </button>
         );
       }
@@ -114,7 +222,7 @@ const ComputerControlledMatrix = (props) => {
     <div>
       <div>{renderMatrix()}</div>
       <h3>Score: {count}    </h3>
-      
+
     </div>
   );
 };

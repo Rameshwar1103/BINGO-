@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import PlayMatrix from './PlayMatrix';
 
 const Matrix = (props) => {
- 
+
   const [selectedButton, setSelectedButton] = useState(null);
   const [finalized, setFinalized] = useState(false);
-  
+
 
 
   const handleButtonClick = (index) => {
@@ -21,12 +21,12 @@ const Matrix = (props) => {
       }
     }
   };
-  
+
   const handleFinalize = () => {
     setFinalized(true);
-   
+
   };
-  
+
 
   const renderMatrix = () => {
     let rows = [];
@@ -60,11 +60,11 @@ const Matrix = (props) => {
     <>
     <div>
       {finalized ? (
-        <PlayMatrix matrix={props.matrix} matrix2={props.matrix2}clickedIndex ={props.clickedIndex} onButtonClick={props.onButtonClick} anounceWinner={props.anounceWinner} setwinner={props.setwinner} turn={props.turn} setturn={props.setturn}/>
+        <PlayMatrix matrix={props.matrix} matrix2={props.matrix2}clickedIndex ={props.clickedIndex} onButtonClick={props.onButtonClick} clickedIndex2={props.clickedIndex2} handleIndexClick2={props.handleIndexClick2} anounceWinner={props.anounceWinner} setwinner={props.setwinner} turn={props.turn} setturn={props.setturn}/>
       ) : (
         <div>{renderMatrix()}</div>
       )}
-      
+
     </div>
     <button onClick={handleFinalize} disabled={finalized} style={{ marginTop: '20px', padding: '10px 20px' }}>
     Finalize Matrices

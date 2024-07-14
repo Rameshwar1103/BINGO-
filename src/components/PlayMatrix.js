@@ -10,14 +10,14 @@ const PlayMatrix = (props) => {
     checkCompletedLines();
     if (props.turn === "user" && !isDisabled) {
       setIsDisabled(true); // Disable all buttons
-      setTimeout(() => setIsDisabled(false), 4000);
+      setTimeout(() => setIsDisabled(false), 100);
       props.setturn("comp");
     }
-      
+
   };
 
   const handleButtonClick = (index) => {
-  
+
     setButtonColors(currentColors => {
         const newColors = [...currentColors];
         newColors[index] = 'pink';
@@ -28,22 +28,36 @@ const PlayMatrix = (props) => {
     handleclick();
 
   };
-   
 
-
+  useEffect(() => {
+    if (props.turn === "uuuu" && props.clickedIndex2 != null) {
+      const valueToMatch = props.matrix2[props.clickedIndex2];
+      const matchedIndex = props.matrix.indexOf(valueToMatch);
+      if (matchedIndex !== -1) {
+        setButtonColors(currentColors => {
+          const newColors = [...currentColors];
+          newColors[matchedIndex] = 'pink';
+          return newColors;
+        });
+        props.setturn("user");
+      }
+      console.log(props.clickedIndex2,props.turn);
+    }
+  }, [props.turn, props.clickedIndex2, props.matrix, props.matrix2]);
+ 
   const checkCompletedLines = () => {
     const matrixSize = 5; // Assuming a 5x5 matrix
     let completeRows = 0;
     let completeColumns = 0;
     let completeDiagonals = 0;
-  
+
     // Check rows
     for (let i = 0; i < matrixSize; i++) {
       if (buttonColors.slice(i * matrixSize, (i + 1) * matrixSize).every(color => color === 'pink')) {
         completeRows++;
       }
     }
-  
+
     // Check columns
     for (let i = 0; i < matrixSize; i++) {
       let column = [];
@@ -54,7 +68,7 @@ const PlayMatrix = (props) => {
         completeColumns++;
       }
     }
-  
+
     // Check diagonals
     let diagonal1 = [];
     let diagonal2 = [];
@@ -68,26 +82,26 @@ const PlayMatrix = (props) => {
     if (diagonal2.every(color => color === 'pink')) {
       completeDiagonals++;
     }
-  
+
     setCount(completeRows+completeColumns+completeDiagonals);
-    if(completeRows + completeColumns + completeDiagonals === 5)
+    if(completeRows + completeColumns + completeDiagonals >= 5)
       {
         props.anounceWinner("Yes");
         props.setwinner("User");
       }
   };
-  
+
   useEffect(() => {
     checkCompletedLines();
   }, [buttonColors]);
-  
+
   const renderMatrix = () => {
     let rows = [];
     for (let i = 0; i < 5; i++) {
       let row = [];
       for (let j = 0; j < 5; j++) {
         const index = i * 5 + j;
-    
+
         row.push(
           <button
             key={index}
