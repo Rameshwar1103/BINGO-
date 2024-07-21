@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
-
-const ComputerControlledMatrix = (props) => {
-  const [buttonColors, setButtonColors] = useState(new Array(25).fill('red'));
-  const [count, setCount] = useState(0);
-  const [showRandom,setshowRandom] = useState(null);
-
+import React, { useState, useEffect, useContext } from 'react';
+import Progress from './Progress';
+import { NewContext } from '../context/Context';
+const ComputerControlledMatrix = ( ) => {
+  
+  const {  matrix, 
+  matrix2, 
+  setMatrix2,
+  clickedIndex, 
+  clickedIndex2,
+  handleIndexClick2,
+  announceWinner,
+  setWinner,
+  turn,
+  setTurn,
+  buttonColors, setButtonColors,
+  count, setCount,
+  buttonColors2, setButtonColors2,
+  isDisabled,setIsDisabled} = useContext(NewContext);
 
   useEffect(() => {
     const swapRandomly = (array, swaps) => {
@@ -17,14 +29,16 @@ const ComputerControlledMatrix = (props) => {
       return newArray;
     };
 
-    const newMatrix = swapRandomly(props.matrix2, 20 + Math.floor(Math.random() * 10));
-    props.setMatrix2(newMatrix);
+    const newMatrix = swapRandomly(matrix2, 20 + Math.floor(Math.random() * 10));
+    setMatrix2(newMatrix);
   }, []);
   
-  const chooseStrategicButton = () => {
-    if (props.turn === "comp") {
-      const nonPinkIndices = buttonColors
-        .map((color, index) => color !== 'pink' ? index : null)
+  const chooseStrategicButton = (matchedIndex) => {
+    
+    if (turn === "comp") {
+      buttonColors2[matchedIndex] = 'pink';
+      const nonPinkIndices = buttonColors2
+        .map((color, index) => (color !== 'pink')? index : null)
         .filter(index => index !== null);
 
       if (nonPinkIndices.length > 0) {
@@ -37,7 +51,7 @@ const ComputerControlledMatrix = (props) => {
         let diag1Count = 0;
         let diag2Count = 0;
 
-        buttonColors.forEach((color, index) => {
+        buttonColors2.forEach((color, index) => {
           const row = Math.floor(index / matrixSize);
           const col = index % matrixSize;
           if (color === 'pink') {
@@ -47,10 +61,12 @@ const ComputerControlledMatrix = (props) => {
             if (row + col === matrixSize - 1) diag2Count++;
           }
         });
+        
+        console.log(nonPinkIndices); 
 
-        // Assign priority to each non-pink button based on the value in props.matrix2
+        // Assign priority to each non-pink button based on the value in matrix2
         nonPinkIndices.forEach(index => {
-          const value = props.matrix2[index];
+          const value = matrix2[index];
           const row = Math.floor(index / matrixSize);
           const col = index % matrixSize;
           priorityArray[index] += rowCount[row] + colCount[col];
@@ -58,72 +74,84 @@ const ComputerControlledMatrix = (props) => {
           if (row + col === matrixSize - 1) priorityArray[index] += diag2Count;
         });
 
+        console.log("priority arr",priorityArray);
+
         // Find the index with the highest priority value
         let maxPriorityIndex = nonPinkIndices.reduce((maxIndex, currentIndex) =>
           priorityArray[currentIndex] > priorityArray[maxIndex] ? currentIndex : maxIndex,
           nonPinkIndices[0]
         );
-
+         
+        console.log(maxPriorityIndex);
         // Ensure to complete a line if almost completed
         const checkAlmostComplete = (indices) => {
-          return indices.filter(index => buttonColors[index] === 'pink').length === 4;
+          return indices.filter(index => buttonColors2[index] === 'pink').length === 4;
         };
-
+        console.log(maxPriorityIndex);
         // Rows
         for (let i = 0; i < matrixSize; i++) {
           const rowIndices = [...Array(matrixSize)].map((_, j) => i * matrixSize + j);
           if (checkAlmostComplete(rowIndices)) {
-            maxPriorityIndex = rowIndices.find(index => buttonColors[index] !== 'pink');
+            maxPriorityIndex = rowIndices.find(index => buttonColors2[index] !== 'pink');
             break;
           }
         }
+        console.log(maxPriorityIndex);
         // Columns
         for (let i = 0; i < matrixSize; i++) {
           const colIndices = [...Array(matrixSize)].map((_, j) => j * matrixSize + i);
           if (checkAlmostComplete(colIndices)) {
-            maxPriorityIndex = colIndices.find(index => buttonColors[index] !== 'pink');
+            maxPriorityIndex = colIndices.find(index => buttonColors2[index] !== 'pink');
             break;
           }
         }
+        console.log(maxPriorityIndex);
         // Diagonals
         const diag1Indices = [...Array(matrixSize)].map((_, i) => i * (matrixSize + 1));
         const diag2Indices = [...Array(matrixSize)].map((_, i) => (i + 1) * (matrixSize - 1));
         if (checkAlmostComplete(diag1Indices)) {
-          maxPriorityIndex = diag1Indices.find(index => buttonColors[index] !== 'pink');
+          maxPriorityIndex = diag1Indices.find(index => buttonColors2[index] !== 'pink');
         } else if (checkAlmostComplete(diag2Indices)) {
-          maxPriorityIndex = diag2Indices.find(index => buttonColors[index] !== 'pink');
+          maxPriorityIndex = diag2Indices.find(index => buttonColors2[index] !== 'pink');
         }
-
+        console.log(maxPriorityIndex);
         // Update button color and switch turn
-        setButtonColors(currentColors => {
+        setButtonColors2(currentColors => {
           const newColors = [...currentColors];
           newColors[maxPriorityIndex] = 'pink';
           return newColors;
         });
-
-        props.handleIndexClick2(maxPriorityIndex);
-        props.setturn("uuuu");
+        
+        handleIndexClick2(maxPriorityIndex);
+        console.log(maxPriorityIndex);
+        setTurn("uuuu");
       }
     }
   };
 
   useEffect(() => {
-    if (props.clickedIndex != null) {
-      const valueToMatch = props.matrix[props.clickedIndex];
-      const matchedIndex = props.matrix2.indexOf(valueToMatch);
+    if (clickedIndex != null) {
+      const valueToMatch = matrix[clickedIndex];
+      const matchedIndex = matrix2.indexOf(valueToMatch);
+       let newColors ;
       if (matchedIndex !== -1) {
-        setButtonColors(currentColors => {
-          const newColors = [...currentColors];
+        setButtonColors2(currentColors => {
+          newColors = [...currentColors];
           newColors[matchedIndex] = 'pink';
           return newColors;
         });
       }
-      chooseStrategicButton();
+      
+      setTimeout(() => {
+        chooseStrategicButton(matchedIndex);
+        setIsDisabled(false); // Enable after timeout
+      }, 2000);
+      
     }
-  }, [props.clickedIndex, props.matrix2, props.matrix]);
+  }, [clickedIndex, matrix2, matrix]);
 
   // useEffect(() => {
-  //   if (props.turn === "comp") {
+  //   if (turn === "comp") {
   //     const nonPinkIndices = buttonColors
   //       .map((color, index) => color !== 'pink' ? index : null)
   //       .filter(index => index !== null);
@@ -135,12 +163,12 @@ const ComputerControlledMatrix = (props) => {
   //         newColors[randomIndex] = 'pink';
   //         return newColors;
   //       });
-  //       props.handleIndexClick2(randomIndex);
-  //       props.setturn("uuuu");
-  //       console.log(props.turn,props.clickedIndex2);
+  //       handleIndexClick2(randomIndex);
+  //       setturn("uuuu");
+  //       console.log(turn,clickedIndex2);
   //     }
   //   }
-  // }, [props.turn, buttonColors]);
+  // }, [turn, buttonColors]);
  
 
   const checkCompletedLines = () => {
@@ -151,7 +179,7 @@ const ComputerControlledMatrix = (props) => {
 
     // Check rows
     for (let i = 0; i < matrixSize; i++) {
-      if (buttonColors.slice(i * matrixSize, (i + 1) * matrixSize).every(color => color === 'pink')) {
+      if (buttonColors2.slice(i * matrixSize, (i + 1) * matrixSize).every(color => color === 'pink')) {
         completeRows++;
       }
     }
@@ -160,7 +188,7 @@ const ComputerControlledMatrix = (props) => {
     for (let i = 0; i < matrixSize; i++) {
       let column = [];
       for (let j = 0; j < matrixSize; j++) {
-        column.push(buttonColors[i + j * matrixSize]);
+        column.push(buttonColors2[i + j * matrixSize]);
       }
       if (column.every(color => color === 'pink')) {
         completeColumns++;
@@ -171,8 +199,8 @@ const ComputerControlledMatrix = (props) => {
     let diagonal1 = [];
     let diagonal2 = [];
     for (let i = 0; i < matrixSize; i++) {
-      diagonal1.push(buttonColors[i * (matrixSize + 1)]);
-      diagonal2.push(buttonColors[(matrixSize - 1) * (i + 1)]);
+      diagonal1.push(buttonColors2[i * (matrixSize + 1)]);
+      diagonal2.push(buttonColors2[(matrixSize - 1) * (i + 1)]);
     }
     if (diagonal1.every(color => color === 'pink')) {
       completeDiagonals++;
@@ -184,14 +212,14 @@ const ComputerControlledMatrix = (props) => {
     setCount(completeRows + completeColumns + completeDiagonals);
     if(completeRows + completeColumns + completeDiagonals >= 5)
       {
-        props.anounceWinner("Yes");
-        props.setwinner("Comp");
+        announceWinner("Yes");
+        setWinner("Comp");
       }
   };
 
   useEffect(() => {
     checkCompletedLines();
-  }, [buttonColors]);
+  }, [buttonColors2]);
 
   const renderMatrix = () => {
     let rows = [];
@@ -206,10 +234,11 @@ const ComputerControlledMatrix = (props) => {
               width: '90px',
               height: '90px',
               textAlign: 'center',
-              backgroundColor: buttonColors[index],
+              backgroundColor: buttonColors2[index],
+              border:matrix2[index]===matrix2[clickedIndex2]?"5px solid green":""
             }}
           >
-          
+          {matrix2[index]}
           </button>
         );
       }
@@ -221,7 +250,7 @@ const ComputerControlledMatrix = (props) => {
   return (
     <div>
       <div>{renderMatrix()}</div>
-      <h3>Score: {count}    </h3>
+      <Progress cnt="computer"/>
 
     </div>
   );

@@ -1,17 +1,21 @@
-import React, { useState,useEffect } from 'react';
-import Comp_Matrix from './Comp_Matrix'; // Make sure to import Comp_Matrix
+import React, {useEffect, useContext } from 'react';
+import Progress from './Progress';
+import { NewContext } from '../context/Context';
 
-const PlayMatrix = (props) => {
-  const [count, setCount] = useState(0);
-  const [buttonColors, setButtonColors] = useState(new Array(25).fill('#32CD32'));
-  const [isDisabled, setIsDisabled] = useState(false); 
+const PlayMatrix = () => {
+  
+ 
+  const {
+    matrix, matrix2, handleIndexClick, clickedIndex2, announceWinner, setWinner, turn, setTurn,count, count2, setCount2,
+    buttonColors, setButtonColors,
+    isDisabled, setIsDisabled
+  } = useContext(NewContext);
 
   const handleclick = () => {
     checkCompletedLines();
-    if (props.turn === "user" && !isDisabled) {
+    if (turn === "user" && !isDisabled) {
       setIsDisabled(true); // Disable all buttons
-      setTimeout(() => setIsDisabled(false), 100);
-      props.setturn("comp");
+      setTurn("comp");
     }
 
   };
@@ -23,27 +27,26 @@ const PlayMatrix = (props) => {
         newColors[index] = 'pink';
         return newColors;
       });
-    props.onButtonClick(index); // Set the selected index
+    handleIndexClick(index); // Set the selected index
     // You can perform other actions here if needed
     handleclick();
 
   };
 
   useEffect(() => {
-    if (props.turn === "uuuu" && props.clickedIndex2 != null) {
-      const valueToMatch = props.matrix2[props.clickedIndex2];
-      const matchedIndex = props.matrix.indexOf(valueToMatch);
+    if (turn === "uuuu" && clickedIndex2 != null) {
+      const valueToMatch = matrix2[clickedIndex2];
+      const matchedIndex = matrix.indexOf(valueToMatch);
       if (matchedIndex !== -1) {
         setButtonColors(currentColors => {
           const newColors = [...currentColors];
           newColors[matchedIndex] = 'pink';
           return newColors;
         });
-        props.setturn("user");
+        setTurn("user");
       }
-      console.log(props.clickedIndex2,props.turn);
     }
-  }, [props.turn, props.clickedIndex2, props.matrix, props.matrix2]);
+  }, [turn, clickedIndex2, matrix, matrix2]);
  
   const checkCompletedLines = () => {
     const matrixSize = 5; // Assuming a 5x5 matrix
@@ -83,11 +86,11 @@ const PlayMatrix = (props) => {
       completeDiagonals++;
     }
 
-    setCount(completeRows+completeColumns+completeDiagonals);
+    setCount2(completeRows+completeColumns+completeDiagonals);
     if(completeRows + completeColumns + completeDiagonals >= 5)
       {
-        props.anounceWinner("Yes");
-        props.setwinner("User");
+        announceWinner("Yes");
+        setWinner("User");
       }
   };
 
@@ -111,11 +114,12 @@ const PlayMatrix = (props) => {
               height: '90px',
               textAlign: 'center',
               backgroundColor: buttonColors[index],
-              color: 'white'
+              color: 'white',
+              border:matrix[index]===matrix2[clickedIndex2]?"5px solid skyblue":""
             }}
             disabled={isDisabled}
           >
-            {props.matrix[index]}
+            {matrix[index]}
           </button>
         );
       }
@@ -127,7 +131,7 @@ const PlayMatrix = (props) => {
   return (
     <div>
       <div>{renderMatrix()}</div>
-      <h3>Score :{count}</h3>
+      <Progress cnt="player"/>
     </div>
   );
 };

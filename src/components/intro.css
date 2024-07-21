@@ -1,0 +1,76 @@
+
+.Container {
+  display: flex;  
+  justify-content: center;  
+  align-items: center; 
+  flex-direction: column;
+  height: 100vh;  
+  width: 100vw;  
+  background-color: #1c1c1c;  
+  margin: 0;
+  padding: 0;
+}
+
+ 
+.loader {
+  height: 250px;
+  width: 250px;
+  display: flex;
+  flex-wrap: wrap;  
+  justify-content: center; 
+  align-items: center;  
+}
+
+.cell {
+  width: 52px;  
+  height: 52px;
+  margin: 10px;  
+  border-radius: 10%;  
+  background-color: transparent; 
+  animation: ripple 1.5s ease infinite;  
+}
+
+/* Delay animations for each cell */
+.cell.d-0 { animation-delay: 100ms; }
+.cell.d-1 { animation-delay: 200ms; }
+.cell.d-2 { animation-delay: 300ms; }
+.cell.d-3 { animation-delay: 400ms; }
+.cell.d-4 { animation-delay: 500ms; }
+.cell.d-5 { animation-delay: 600ms; }
+.cell.d-6 { animation-delay: 700ms; }
+.cell.d-7 { animation-delay: 800ms; }
+.cell.d-8 { animation-delay: 900ms; }
+
+/* Different colors for each cell */
+.cell:nth-child(1) { --cell-color: #00FF87; }
+.cell:nth-child(2) { --cell-color: #0CFD95; }
+.cell:nth-child(3) { --cell-color: #17FBA2; }
+.cell:nth-child(4) { --cell-color: #23F9B2; }
+.cell:nth-child(5) { --cell-color: #30F7C3; }
+.cell:nth-child(6) { --cell-color: #3DF5D4; }
+.cell:nth-child(7) { --cell-color: #45F4DE; }
+.cell:nth-child(8) { --cell-color: #53F1F0; }
+.cell:nth-child(9) { --cell-color: #60EFFF; }
+
+/* Ripple animation */
+@keyframes ripple {
+  0% { transform: scale(1); background-color: transparent; }
+  50% { transform: scale(1.2); background-color: var(--cell-color); box-shadow: 0 0 15px var(--cell-color); }
+  100% { transform: scale(1); background-color: transparent; }
+}
+
+.bingo {
+  font-size: 48px;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  z-index: 1;
+  color: white;
+  margin-top: 2rem;
+}
+
+
+

@@ -1,22 +1,24 @@
-import React from 'react';
+import React, { useContext } from 'react';
 // import './Congratulations.css'; // Import the CSS file for styling
 import './VideoBackgroundBox.css';
-const Congratulations = (props) => {
-    
+import { NewContext } from '../context/Context';
+const Congratulations = ( ) => {
+    const {restoreMatrix, handleIndexClick,handleIndexClick2,announceWinner,winnerName, } = useContext(NewContext);
 const Restart =()=>{
-    props.restoreMatrix();
-    props.handleIndexClick(null);
-    props.anounceWinner("NO");
+    restoreMatrix();
+    handleIndexClick(null);
+    handleIndexClick2(null);
+    announceWinner("NO");
 }
   return (
     <div className="video-container">
       <div className='container my-4 congratulations-container'>
       <div className='congratulations-content'>
-        <h1 className='congratulations-title'>Congratulations!</h1>
-        <p className='congratulations-message'>{props.winnerName} won the game!</p>
+        <h1 className='congratulations-title'>{winnerName === "User" ? 'Congratulations!' : 'OOPS! Better Luck Next Time'}</h1>
+        <p className='congratulations-message'>{winnerName} won the game!</p>
         <button className='play-again-button' onClick={Restart}>Play Again</button>
       </div>
-    </div>
+      </div>    
     </div>
     
   );
