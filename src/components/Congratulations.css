@@ -1,19 +1,39 @@
 /* General container styling */
+.image{
+  height: 200px;
+  width: 200px;
+  background-image: url("D:\react_js\BINGO\src\components\happy.jpg");
+  background-size: cover; /* Adjusts image to cover the entire box */
+  background-position: center; /* Centers the image in the box */
+  background-repeat: no-repeat; /* Ensures the image doesn't repeat */
+  border: 1px solid #000;
+}
+.image1{
+  height: 200px;
+  width: 200px;
+  background-image: url("D:\react_js\BINGO\src\components\betterluck.jpg");
+  background-size: cover; /* Adjusts image to cover the entire box */
+  background-position: center; /* Centers the image in the box */
+  background-repeat: no-repeat; /* Ensures the image doesn't repeat */
+  border: 1px solid #000;
+}
 .congratulations-container {
     height: 80vh;
     width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: gray;
+    flex-direction: column;
+    color: aqua;
     overflow: hidden; /* Prevent overflow from animations */
   }
   
   /* Content styling */
   .congratulations-content {
     text-align: center;
-    color: white;
+    color: aqua;
     font-family: 'Arial, sans-serif';
+    text-shadow:2px 2px white;
   }
   
   /* Title animation */
