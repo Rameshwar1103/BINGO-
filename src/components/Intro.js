@@ -8,7 +8,7 @@ function Intro() {
   useEffect(() => {
     // Navigate to /playground after 5 seconds
     const timer = setTimeout(() => {
-      navigate('/GameModeselection');
+      navigate('/GameModeSelection');
     }, 2200);
 
     return () => clearTimeout(timer); // Cleanup timer on component unmount

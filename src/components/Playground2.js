@@ -13,6 +13,7 @@ function Playgorund2() {
     const {
         isOwn
       } = useContext(NewContext);
+      
   return (
     <div>
        <Navbar />

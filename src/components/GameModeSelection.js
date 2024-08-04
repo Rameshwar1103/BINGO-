@@ -9,7 +9,7 @@ const GameModeSelection = () => {
   }
 
   const handleonClick2 =()=>{
-    navigate('/Playground2');
+    navigate('/Login');
   }
   return (
     <div className="container">
