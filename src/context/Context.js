@@ -18,12 +18,16 @@ function ContextProvider({ children }) {
   const [count2, setCount2] = useState(0);
   const [buttonColors, setButtonColors] = useState(new Array(25).fill('#32CD32'));
   const [isDisabled, setIsDisabled] = useState(false); 
-  const [Player1,setPlayer1] = useState("");
-  const [Player2,setPlayer2] = useState("");
-  const [userList, setUserList] = useState([]);
+ 
 
   const restoreMatrix = () => {
     setMatrix(Array.from({ length: 25 }, (_, i) => (i + 1).toString()));
+    setMatrix2(Array.from({length: 25 }, (_, i) => (i + 1).toString()));
+    setButtonColors(new Array(25).fill('#32CD32'));
+    setButtonColors2(new Array(25).fill('red'));
+    setIsDisabled(false);
+    setIsOwn("NO");
+    setTurn("user");
   };
 
   const handleIndexClick = (index) => {
@@ -72,10 +76,7 @@ function ContextProvider({ children }) {
       finalized, setFinalized,
       count2, setCount2,
       buttonColors2, setButtonColors2,
-      isDisabled, setIsDisabled,
-      Player1,setPlayer1,
-      Player2,setPlayer2,
-      userList, setUserList
+      isDisabled, setIsDisabled
     }}>
       {children}
     </NewContext.Provider>

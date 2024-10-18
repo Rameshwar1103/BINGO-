@@ -14,14 +14,13 @@ app.use(cors({
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Replace with your React app's URL
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
-    credentials: true // Allow credentials for WebSocket connections
+    credentials: true
   }
 });
 
 const PORT = process.env.PORT || 3001;
-
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../public')));
@@ -34,36 +33,23 @@ let userList = [];
 
 io.on('connection', (socket) => {
   console.log('a user connected');
+  let Username;
 
-  // Handle player move (example of game-specific event)
-  socket.on('playerMove', (index) => {
-    socket.broadcast.emit('opponentMove', index);
-  });
-  
-  let Username ;
-  // Listen for the 'username' event
   socket.on('username', (username) => {
-    // Store the username along with the socket.id
     Username = username;
     const userEntry = { id: socket.id, name: username };
     userList.push(userEntry);
     io.emit('updateUserList', userList);
-    console.log(userList);
+    console.log(`User connected: ${username}`);
   });
 
-  // Listen for the 'sendInvite' event
   socket.on('sendInvite', (invitedPlayer) => {
-    // Check if the invited player is online (you can add more logic here)
     const recipient = userList.find((user) => user.name === invitedPlayer);
-    console.log("The recepeint",recipient);
     if (recipient) {
-      // Notify the recipient about the invite
-      io.to(recipient.id).emit('receiveInvite',Username );
-    } else {
-      // Handle the case when the invited player is not online
-      // You can show an error message or take other actions
+      io.to(recipient.id).emit('receiveInvite', Username);
     }
   });
+
   socket.on('acceptInvite', (invitingPlayer) => {
     const invitedPlayer = userList.find(user => user.id === socket.id)?.name;
     const invitingUser = userList.find(user => user.name === invitingPlayer);
@@ -72,8 +58,17 @@ io.on('connection', (socket) => {
       io.to(socket.id).emit('joinGame');
     }
   });
-});
 
+  socket.on('playerMove', (index) => {
+    socket.broadcast.emit('opponentMove', index);
+  });
+
+  socket.on('disconnect', () => {
+    userList = userList.filter(user => user.id !== socket.id);
+    io.emit('updateUserList', userList);
+    console.log(`User disconnected: ${Username}`);
+  });
+});
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

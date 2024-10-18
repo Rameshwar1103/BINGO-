@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const GameModeSelection = () => {
   const navigate = useNavigate();
   const handleonClick1 =()=>{
-    navigate('/Playground');
+    navigate('/playground');
   }
 
   const handleonClick2 =()=>{
